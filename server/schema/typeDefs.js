@@ -2,22 +2,27 @@ const gql = String.raw;
 
 const typeDefs = gql`
   type User {
-    id: ID
-    name: String
-    age: Int
+    _id: ID
+    username: String
+    email: String
   }
 
   type Response {
     message: String
   }
 
+  type AuthResponse {
+    message: String
+    user: User
+  }
+
   type Query {
-    getUser: User
+    getUser: AuthResponse
   }
 
   type Mutation {
-    registerUser(username: String, email: String, password: String): User
-    loginUser(email: String, password: String): User
+    registerUser(username: String, email: String, password: String): AuthResponse
+    loginUser(email: String, password: String): AuthResponse
   }
 `;
 

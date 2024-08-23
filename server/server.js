@@ -1,6 +1,8 @@
+require('dotenv').config();
 const express = require('express');
 const { ApolloServer } = require('@apollo/server');
 const { expressMiddleware } = require('@apollo/server/express4');
+const cookieParser = require('cookie-parser');
 
 const typeDefs = require('./schema/typeDefs');
 const resolvers = require('./schema/resolvers');
@@ -22,7 +24,15 @@ async function startServer() {
     '/graphql',
     // cors(), 
     express.json(),
-    expressMiddleware(server)
+    cookieParser(),
+    expressMiddleware(server, {
+      context: ({ req, res }) => {
+        return {
+          req,
+          res
+        }
+      }
+    })
   );
 
   db.once('open', () => {
