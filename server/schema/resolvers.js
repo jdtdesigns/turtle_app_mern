@@ -1,6 +1,8 @@
 const { User, Turtle } = require('../models');
 const { sign, verify } = require('jsonwebtoken');
 
+const { GraphQLError } = require('graphql');
+
 function createToken(user_id) {
   const token = sign({ user_id: user_id }, process.env.JWT_SECRET);
 
@@ -13,9 +15,9 @@ const resolvers = {
       const token = context.req.cookies.token;
 
       if (!token) {
-        return {
+        throw new GraphQLError({
           message: 'Not Authorized'
-        }
+        })
       }
 
       const { user_id } = verify(token, process.env.JWT_SECRET);
@@ -23,9 +25,9 @@ const resolvers = {
       const user = await User.findById(user_id);
 
       if (!user) {
-        return {
+        throw new GraphQLError({
           message: 'No User Found'
-        }
+        })
       }
 
       return {
@@ -54,9 +56,7 @@ const resolvers = {
       } catch (error) {
         console.log('register error', error);
 
-        return {
-          message: 'Register error'
-        }
+        throw new GraphQLError('No User Found')
       }
     },
 
@@ -66,17 +66,13 @@ const resolvers = {
       });
 
       if (!user) {
-        return {
-          message: 'No user found by that email address.'
-        }
+        throw new GraphQLError('No user found by that email address.');
       }
 
       const valid_pass = await user.validatePassword(args.password);
 
       if (!valid_pass) {
-        return {
-          message: 'Password incorrect.'
-        }
+        throw new GraphQLError('Password incorrect.');
       }
 
       const token = createToken(user._id); // Create a JWT
@@ -86,6 +82,7 @@ const resolvers = {
       }); // Send a cookie with the JWT attached
 
       return {
+        message: 'Logged in successfully!',
         user
       }
     }

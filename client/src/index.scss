@@ -1,0 +1,106 @@
+$green: #3fbd75;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+a {
+  color: #333;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+}
+
+button {
+  cursor: pointer;
+}
+
+// GLOBAL CLASSES
+.row,
+.column {
+  display: flex;
+}
+
+.column {
+  flex-direction: column;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.text-center {
+  text-align: center;
+}
+
+// CUSTOM STYLES
+header {
+  padding: 10px 5%;
+  background: $green;
+  color: #eee;
+  margin-bottom: 25px;
+
+  nav {
+    a {
+      color: #eee;
+
+      &:not(:last-child) {
+        margin-right: 7px;
+      }
+
+      &.active,
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+form {
+  width: 400px;
+  margin: 25px auto;
+  > * {
+    padding: 6px 10px;
+    margin-bottom: 6px;
+  }
+  h2 {
+    color: $green;
+  }
+
+  input:focus {
+    outline: 2px solid lighten($green, 10%);
+  }
+  
+  button {
+    background: $green;
+    color: #fff;
+    border: none;
+    padding: 7px 0;
+    font-size: 1rem;
+  }
+
+  p {
+    color: $green;
+    &.error-message {
+      color: #fc224d;
+    }
+    span {
+      color: #fd7d0d;
+      cursor: pointer;
+    }
+  }
+}
