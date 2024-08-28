@@ -1,18 +1,8 @@
 import { useState } from 'react'
-import { useMutation, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import { useNavigate } from 'react-router-dom'
 
-const LOGIN_USER = gql`
-  mutation LoginUser($email: String, $password: String) {
-    loginUser(email: $email, password: $password) {
-      message
-      user {
-        _id
-        username
-      }
-    }
-  }
-`
+import { LOGIN_USER, REGISTER_USER } from '../graphql/mutations'
 
 const initialFormData = {
   username: '',
@@ -27,11 +17,15 @@ function AuthForm(props) {
   const [loginUser] = useMutation(LOGIN_USER, {
     variables: formData
   })
+  const [registerUser] = useMutation(REGISTER_USER, {
+    variables: formData
+  })
   const navigate = useNavigate()
 
   const toggleAuthState = (newValue) => {
     setFormData({
       ...formData,
+      errorMessage: '',
       isLogin: newValue
     })
   }
@@ -47,12 +41,18 @@ function AuthForm(props) {
     event.preventDefault()
 
     try {
-      const res = await loginUser()
+      let res;
 
-      props.setUser(res.data.loginUser.user)
+      if (formData.isLogin) {
+        res = await loginUser()
+        props.setUser(res.data.loginUser.user)
+      } else {
+        res = await registerUser()
+        props.setUser(res.data.registerUser.user)
+      }
+
       navigate('/dashboard')
     } catch (error) {
-      console.log(res)
       setFormData({
         ...formData,
         errorMessage: error.message

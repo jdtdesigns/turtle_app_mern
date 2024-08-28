@@ -56,7 +56,11 @@ const resolvers = {
       } catch (error) {
         console.log('register error', error);
 
-        throw new GraphQLError('No User Found')
+        if (error.code === 11000) {
+          throw new GraphQLError('A user with that email address or username already exists')
+        }
+
+        throw new GraphQLError(error.message.split(':')[2].trim());
       }
     },
 
@@ -85,8 +89,37 @@ const resolvers = {
         message: 'Logged in successfully!',
         user
       }
-    }
+    },
 
+    logoutUser(_, args, context) {
+      context.res.clearCookie('token');
+
+      return {
+        message: 'Logged out successfully'
+      }
+    },
+
+    // Turtle Resolvers
+    async addTurtle(_, args, context) {
+      const token = context.req.cookies.token;
+
+      if (!token) {
+        throw new GraphQLError('You are not authorized to perform that action')
+      }
+
+      const { user_id } = verify(token, process.env.JWT_SECRET);
+
+      const user = await User.findById(user_id);
+      const turtle = await Turtle.create({
+        ...args,
+        user: user._id
+      });
+
+      user.turtles.push(turtle._id);
+      await user.save();
+
+      return turtle
+    }
   }
 };
 

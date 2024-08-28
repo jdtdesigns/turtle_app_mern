@@ -39,6 +39,10 @@ button {
   justify-content: space-between;
 }
 
+.justify-center {
+  justify-content: center;
+}
+
 .align-center {
   align-items: center;
 }
@@ -48,11 +52,44 @@ button {
 }
 
 // CUSTOM STYLES
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 500;
+  background-image: linear-gradient(rgba(0, 0, 0, .6), rgba(0, 0, 0, .5)), url(/images/turtle_reading.jpeg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 100vw;
+  height: 100vh;
+  h1 {
+    color: $green;
+    text-shadow: 1px 1px 5px #000;
+  }
+}
+
 header {
   padding: 10px 5%;
   background: $green;
   color: #eee;
   margin-bottom: 25px;
+
+  p {
+    margin-right: 15px;
+  }
+
+  button {
+    background: none;
+    border: 1px solid #eee;
+    color: #eee;
+    padding: 5px 10px;
+    border-radius: 3px;
+    transition: all .3s;
+    &:hover {
+      background: #eee;
+      color: #555;
+    }
+  }
 
   nav {
     a {

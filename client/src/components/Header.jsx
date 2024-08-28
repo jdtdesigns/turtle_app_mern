@@ -1,8 +1,18 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useMutation } from '@apollo/client'
 
+import { LOGOUT_USER } from '../graphql/mutations'
 
 function Header(props) {
-  console.log(props.user)
+  const navigate = useNavigate()
+  const [logoutUser] = useMutation(LOGOUT_USER)
+
+  const handleLogout = async () => {
+    await logoutUser()
+    await props.setUser(null)
+
+    navigate('/')
+  }
 
   return (
     <header className="row justify-between align-center">
@@ -11,7 +21,7 @@ function Header(props) {
       {props.user ? (
         <div className="row align-center">
           <p>Welcome, {props.user.username}</p>
-          <button>Log Out</button>
+          <button onClick={handleLogout}>Log Out</button>
         </div>
       ) : (
         <nav>
