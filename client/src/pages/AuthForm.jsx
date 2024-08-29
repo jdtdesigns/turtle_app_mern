@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom'
 
 import { LOGIN_USER, REGISTER_USER } from '../graphql/mutations'
 
+import { useStore } from '../store'
+
 const initialFormData = {
   username: '',
   email: '',
@@ -12,7 +14,8 @@ const initialFormData = {
   isLogin: true
 }
 
-function AuthForm(props) {
+function AuthForm() {
+  const { setState } = useStore()
   const [formData, setFormData] = useState(initialFormData)
   const [loginUser] = useMutation(LOGIN_USER, {
     variables: formData
@@ -45,10 +48,20 @@ function AuthForm(props) {
 
       if (formData.isLogin) {
         res = await loginUser()
-        props.setUser(res.data.loginUser.user)
+        setState((oldState) => {
+          return {
+            ...oldState,
+            user: res.data.loginUser.user
+          }
+        })
       } else {
         res = await registerUser()
-        props.setUser(res.data.registerUser.user)
+        setState((oldState) => {
+          return {
+            ...oldState,
+            user: res.data.loginUser.user
+          }
+        })
       }
 
       navigate('/dashboard')

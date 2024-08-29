@@ -2,15 +2,20 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useMutation, useApolloClient } from '@apollo/client'
 
 import { LOGOUT_USER } from '../graphql/mutations'
+import { useStore } from '../store'
 
-function Header(props) {
+function Header() {
+  const { state, setState } = useStore()
   const navigate = useNavigate()
   const client = useApolloClient()
   const [logoutUser] = useMutation(LOGOUT_USER)
 
   const handleLogout = async () => {
     await logoutUser()
-    await props.setUser(null)
+    await setState(oldState => ({
+      ...oldState,
+      user: null
+    }))
 
     client.clearStore()
 
@@ -23,9 +28,9 @@ function Header(props) {
         <h3>Cowabunga</h3>
       </NavLink>
 
-      {props.user ? (
+      {state.user ? (
         <div className="row align-center">
-          <p>Welcome, {props.user.username}</p>
+          <p>Welcome, {state.user.username}</p>
           <NavLink className="dashboard-link" to="/dashboard">Dashboard</NavLink>
           <button onClick={handleLogout}>Log Out</button>
         </div>

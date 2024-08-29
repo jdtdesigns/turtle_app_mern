@@ -12,40 +12,35 @@ function createToken(user_id) {
 const resolvers = {
   Query: {
     async getUser(_, args, context) {
-      const token = context.req.cookies.token;
+      const user_id = context.user_id;
 
-      if (!token) {
-        throw new GraphQLError({
-          message: 'Not Authorized'
-        })
+      if (!user_id) {
+        return {
+          user: null
+        }
       }
-
-      const { user_id } = verify(token, process.env.JWT_SECRET);
 
       const user = await User.findById(user_id);
 
       if (!user) {
-        throw new GraphQLError({
-          message: 'No User Found'
-        })
+        return {
+          user: null
+        }
       }
 
       return {
-        message: 'User Found',
         user
       };
     },
 
     async getUserTurtles(_, args, context) {
-      const token = context.req.cookies.token;
+      const user_id = context.user_id;
 
-      if (!token) {
+      if (!user_id) {
         throw new GraphQLError({
           message: 'Not Authorized'
         })
       }
-
-      const { user_id } = verify(token, process.env.JWT_SECRET);
 
       const user = await User.findById(user_id).populate('turtles');
 
@@ -123,13 +118,11 @@ const resolvers = {
 
     // Turtle Resolvers
     async addTurtle(_, args, context) {
-      const token = context.req.cookies.token;
+      const user_id = context.user_id;
 
-      if (!token) {
+      if (!user_id) {
         throw new GraphQLError('You are not authorized to perform that action')
       }
-
-      const { user_id } = verify(token, process.env.JWT_SECRET);
 
       const user = await User.findById(user_id);
       const turtle = await Turtle.create({
@@ -144,13 +137,12 @@ const resolvers = {
     },
 
     async deleteTurtle(_, args, context) {
-      const token = context.req.cookies.token;
+      const user_id = context.user_id;
 
-      if (!token) {
+      if (!user_id) {
         throw new GraphQLError('You are not authorized to perform that action')
       }
 
-      const { user_id } = verify(token, process.env.JWT_SECRET);
       const user = await User.findById(user_id);
 
       if (!user.turtles.includes(args.turtle_id)) {
