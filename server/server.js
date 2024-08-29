@@ -4,6 +4,7 @@ const { ApolloServer } = require('@apollo/server');
 const { expressMiddleware } = require('@apollo/server/express4');
 const cookieParser = require('cookie-parser');
 const { verify } = require('jsonwebtoken');
+const path = require('path');
 
 const typeDefs = require('./schema/typeDefs');
 const resolvers = require('./schema/resolvers');
@@ -49,6 +50,13 @@ async function startServer() {
       }
     })
   );
+
+  if (!process.env.PORT) {
+    app.use(express.static('../client/dist'));
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+    })
+  }
 
   db.once('open', () => {
     app.listen(PORT, () => {
