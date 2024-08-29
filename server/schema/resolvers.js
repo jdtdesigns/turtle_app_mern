@@ -34,6 +34,28 @@ const resolvers = {
         message: 'User Found',
         user
       };
+    },
+
+    async getUserTurtles(_, args, context) {
+      const token = context.req.cookies.token;
+
+      if (!token) {
+        throw new GraphQLError({
+          message: 'Not Authorized'
+        })
+      }
+
+      const { user_id } = verify(token, process.env.JWT_SECRET);
+
+      const user = await User.findById(user_id).populate('turtles');
+
+      return user.turtles;
+    },
+
+    async getAllTurtles() {
+      const turtles = await Turtle.find().populate('user');
+
+      return turtles;
     }
   },
 
@@ -119,6 +141,32 @@ const resolvers = {
       await user.save();
 
       return turtle
+    },
+
+    async deleteTurtle(_, args, context) {
+      const token = context.req.cookies.token;
+
+      if (!token) {
+        throw new GraphQLError('You are not authorized to perform that action')
+      }
+
+      const { user_id } = verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(user_id);
+
+      if (!user.turtles.includes(args.turtle_id)) {
+        throw new GraphQLError('You cannot delete a turtle that you did not add');
+      }
+
+      await Turtle.deleteOne({
+        _id: args.turtle_id
+      });
+
+      user.turtles.pull(args.turtle_id);
+      await user.save();
+
+      return {
+        message: 'Turtle deleted successfully'
+      }
     }
   }
 };
