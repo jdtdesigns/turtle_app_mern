@@ -1,5 +1,5 @@
 const { User, Turtle } = require('../models');
-const { sign, verify } = require('jsonwebtoken');
+const { sign } = require('jsonwebtoken');
 
 const { GraphQLError } = require('graphql');
 
